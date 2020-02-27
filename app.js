@@ -2,4 +2,8 @@ const express = require("express");
 
 const server = express();
 
-server.listen(3000);
+server.get("/", (req, res) => {
+  res.json("Its Working");
+});
+
+server.listen(3000 || process.env.PORT);
