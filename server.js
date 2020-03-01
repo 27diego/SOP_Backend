@@ -4,10 +4,26 @@ require("dotenv").config();
 const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
+const multer = require("multer");
+const path = require("path");
 
 //express and middleware
 const server = express();
 server.use(bodyParser.json());
+server.use(express.static(path.join(__dirname, "public")));
+server.use("/file", express.static(path.join(__dirname, "SOPS")));
+
+//Multer
+const fileStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "SOPS");
+  },
+  filename: (req, file, cb) => {
+    cb(null, file.originalname);
+  }
+});
+
+server.use(multer({ storage: fileStorage }).single("file"));
 
 //connect to mongodb
 mongoose.connect(process.env.DATABASE_URL, {
@@ -24,13 +40,55 @@ db.once("open", () => {
 
 //controllers and routes
 const User = require("./controllers/Users/User");
+const Login = require("./controllers/Users/Login");
+const Files = require("./controllers/Files/File");
 
 server.get("/", (req, res) => {
   res.json("Its Working");
 });
 
+//--------------USERS--------------
+
 server.post("/user", (req, res) => {
   User.createUser(req, res);
+});
+
+server.get("/user", (req, res) => {
+  User.getUser(req, res);
+});
+
+server.get("/user/all", (req, res) => {
+  User.getUsers(req, res);
+});
+
+server.delete("/user", (req, res) => {
+  User.deleteUser(req, res);
+});
+
+//update user
+server.put("/user", (req, res) => {
+  switch (req.body.type) {
+    case "Admin":
+      User.updateUserAdmin(req, res);
+    default:
+      return;
+  }
+});
+
+//update user credentials
+server.put("/login", (req, res) => {
+  switch (req.body.type) {
+    case "password":
+      Login.updateLoginPassword(req, res);
+    default:
+      return;
+  }
+});
+
+//-----------------FILES----------------
+
+server.post("/file", (req, res) => {
+  Files.addFile(req, res);
 });
 
 server.listen(3000 || process.env.PORT);

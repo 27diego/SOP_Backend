@@ -12,7 +12,8 @@ const UsersSchema = new mongoose.Schema({
   },
   username: {
     type: String,
-    required: false
+    required: false,
+    unique: true
   },
   //this object is for settings
   admin: { type: Boolean, default: false }
