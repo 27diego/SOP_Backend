@@ -2,10 +2,10 @@ const mongoose = require("mongoose");
 
 const TypesSchema = new mongoose.Schema({
   departments: {
-    type: [String]
+    type: String
   },
   categories: {
-    type: [String]
+    type: String
   }
 });
 

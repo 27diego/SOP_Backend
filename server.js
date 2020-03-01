@@ -6,12 +6,19 @@ const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const multer = require("multer");
 const path = require("path");
+const cors = require("cors");
 
 //express and middleware
 const server = express();
 server.use(bodyParser.json());
 server.use(express.static(path.join(__dirname, "public")));
 server.use("/file", express.static(path.join(__dirname, "SOPS")));
+server.use((req, res, next) => {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  next();
+});
 
 //Multer
 const fileStorage = multer.diskStorage({
@@ -42,6 +49,8 @@ db.once("open", () => {
 const User = require("./controllers/Users/User");
 const Login = require("./controllers/Users/Login");
 const Files = require("./controllers/Files/File");
+const Departments = require("./controllers/Types/Departments");
+const Categories = require("./controllers/Types/Categories");
 
 server.get("/", (req, res) => {
   res.json("Its Working");
@@ -83,6 +92,32 @@ server.put("/login", (req, res) => {
     default:
       return;
   }
+});
+
+//---------------TYPES-----------------
+
+server.post("/department", (req, res) => {
+  Departments.addDepartment(req, res);
+});
+
+server.delete("/department", (req, res) => {
+  Departments.deleteDepartment(req, res);
+});
+
+server.get("/department/all", (req, res) => {
+  Departments.getDepartments(req, res);
+});
+
+server.post("/category", (req, res) => {
+  Categories.addCategory(req, res);
+});
+
+server.delete("/category", (req, res) => {
+  Categories.deleteCategory(req, res);
+});
+
+server.get("/category/all", (req, res) => {
+  Categories.getCategories(req, res);
 });
 
 //-----------------FILES----------------

@@ -23,7 +23,6 @@ const addFile = (req, res) => {
   sop
     .save()
     .then(data => {
-      console.log("form saved");
       res.json("File Saved!");
     })
     .catch(err => console.log(err));
