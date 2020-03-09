@@ -51,9 +51,15 @@ const Login = require("./controllers/Users/Login");
 const Files = require("./controllers/Files/File");
 const Departments = require("./controllers/Types/Departments");
 const Categories = require("./controllers/Types/Categories");
+const SignIn = require("./controllers/Authentication/SignIn");
 
 server.get("/", (req, res) => {
   res.json("Its Working");
+});
+
+//-----------Authentication---------
+server.post("/signIn", (req, res) => {
+  SignIn.handleSignIn(req, res);
 });
 
 //--------------USERS--------------

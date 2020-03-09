@@ -15,8 +15,14 @@ const UsersSchema = new mongoose.Schema({
     required: false,
     unique: true
   },
-  //this object is for settings
-  admin: { type: Boolean, default: false }
+  admin: {
+    type: Boolean,
+    default: false
+  },
+  department: {
+    type: String,
+    default: ""
+  }
 });
 
 //Virtual for user's full name

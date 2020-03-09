@@ -2,7 +2,14 @@ const mongoUsers = require("../../model/Users");
 const Login = require("./Login");
 
 const createUser = (req, res) => {
-  const { first_name, last_name, username, password, admin } = req.body;
+  const {
+    first_name,
+    last_name,
+    username,
+    password,
+    admin,
+    department
+  } = req.body;
 
   let userDetails = {};
 
@@ -13,7 +20,7 @@ const createUser = (req, res) => {
     username !== "" ||
     password !== ""
   ) {
-    userDetails = { first_name, last_name, username, admin };
+    userDetails = { first_name, last_name, username, admin, department };
   }
 
   mongoUsers
