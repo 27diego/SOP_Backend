@@ -32,7 +32,10 @@ const deleteDepartment = (req, res) => {
 const getDepartments = (req, res) => {
   mongoDepartments
     .find()
-    .then(deps => res.json(deps))
+    .then(deps => {
+      const departments = deps.map(item => item["department"]);
+      res.json(departments);
+    })
     .catch(err => console.log(err));
 };
 

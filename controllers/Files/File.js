@@ -2,7 +2,7 @@ const mongoSOPS = require("../../model/SopLibrary");
 const multer = require("multer");
 
 const addFile = (req, res) => {
-  const { title, category, department, modified } = req.body;
+  const { title, category, department } = req.body;
   const file = req.file;
 
   if ((title === "" || category === "", department === "" || modified === "")) {
