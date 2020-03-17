@@ -25,7 +25,7 @@ const deleteDepartment = (req, res) => {
 
   mongoDepartments
     .findOneAndDelete({ department })
-    .then(user => res.json("user deleted"))
+    .then(user => res.json(user))
     .catch(err => console.log(err));
 };
 
