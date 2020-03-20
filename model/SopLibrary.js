@@ -7,7 +7,7 @@ const SopLibrarySchema = new mongoose.Schema({
   },
   category: {
     type: String,
-    enum: ["chemical", "cleaning"],
+    enum: ["Chemical", "Cleaning"],
     required: true
   },
   department: {
@@ -21,6 +21,7 @@ const SopLibrarySchema = new mongoose.Schema({
   },
   modified: {
     type: Date,
+    required: false,
     default: Date.now()
   }
 });

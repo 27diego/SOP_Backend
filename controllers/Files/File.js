@@ -5,7 +5,7 @@ const addFile = (req, res) => {
   const { title, category, department } = req.body;
   const file = req.file;
 
-  if ((title === "" || category === "", department === "" || modified === "")) {
+  if ((title === "" || category === "", department === "")) {
     res.json("invalid form");
     return;
   }
@@ -17,7 +17,10 @@ const addFile = (req, res) => {
 
   const location = file.path;
 
-  sopDetails = { title, category, department, location, modified };
+  console.log("file: ", file);
+  console.log(title);
+
+  sopDetails = { title, category, department, location };
   const sop = new mongoSOPS(sopDetails);
 
   sop
