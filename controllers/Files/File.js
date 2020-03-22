@@ -35,7 +35,19 @@ const addFile = (req, res) => {
   rename(file.path, title);
 };
 
-const getFile = (req, res) => {};
+const deleteFile = (req, res) => {
+  const { title } = req.body;
+
+  mongoSOPS.findOneAndDelete({ title }).then(user => fs.unlinkSync(user.path));
+};
+
+const getFile = (req, res) => {
+  const { title } = req.body;
+
+  mongoSOPS.findOne({ title }).then(user => {
+    res.json(user);
+  });
+};
 
 const rename = (path, title) => {
   const indexOfSlash = path.lastIndexOf("/");
