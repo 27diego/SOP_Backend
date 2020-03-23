@@ -132,4 +132,15 @@ server.post("/file", (req, res) => {
   Files.addFile(req, res);
 });
 
+server.delete("/file", (req, res) => {
+  Files.deleteFile(req, res);
+});
+
+server.get("/file/single", (req, res) => {
+  Files.getFile(req, res);
+});
+server.get("/file/all", (req, res) => {
+  Files.getFiles(req, res);
+});
+
 server.listen(3000 || process.env.PORT);

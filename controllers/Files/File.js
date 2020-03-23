@@ -21,35 +21,30 @@ const addFile = (req, res) => {
   const location = file.path;
 
   sopDetails = { title, category, department, location };
-  const sop = new mongoSOPS(sopDetails);
-
-  sop
-    .save()
-    .then(data => {
-      res.json("File Saved!");
-    })
-    .catch(err => console.log(err));
 
   //rename file
-
-  rename(file.path, title);
+  rename(file.path, title, sopDetails);
 };
 
 const deleteFile = (req, res) => {
   const { title } = req.body;
 
-  mongoSOPS.findOneAndDelete({ title }).then(user => fs.unlinkSync(user.path));
+  mongoSOPS.findOneAndDelete({ title }).then(file => {
+    fs.unlinkSync(file.location);
+    res.json("deleted!");
+  });
 };
 
 const getFile = (req, res) => {
   const { title } = req.body;
 
-  mongoSOPS.findOne({ title }).then(user => {
-    res.json(user);
+  mongoSOPS.findOne({ title }).then(file => {
+    console.log(file);
+    res.json(file);
   });
 };
 
-const rename = (path, title) => {
+const rename = (path, title, sopDetails) => {
   const indexOfSlash = path.lastIndexOf("/");
   const indexOfDot = path.lastIndexOf(".");
 
@@ -60,10 +55,10 @@ const rename = (path, title) => {
 
   fs.renameSync(path, newName);
 
-  transformFile(newName);
+  transformFile(newName, sopDetails);
 };
 
-const transformFile = async path => {
+const transformFile = async (path, sopDetails) => {
   const data = await word2pdf(path);
 
   const indexOfDot = path.lastIndexOf(".");
@@ -71,19 +66,40 @@ const transformFile = async path => {
 
   let error = false;
 
-  fs.writeFileSync(finalName, data, err => {
+  fs.writeFile(finalName, data, err => {
+    let success = false;
     if (err) {
       console.log(err);
       error = true;
+    } else {
+      sopDetails["location"] = finalName;
+      const sop = new mongoSOPS(sopDetails);
+      sop
+        .save()
+        .then(data => {
+          success = true;
+        })
+        .catch(err => console.log(err));
     }
   });
 
-  if (error == false) {
+  if (error === false) {
     fs.unlinkSync(path);
   }
 };
 
+const getFiles = (req, res) => {
+  mongoSOPS
+    .find()
+    .then(files => {
+      res.json(files);
+    })
+    .catch(err => console.log(err));
+};
+
 module.exports = {
   addFile,
-  getFile
+  getFile,
+  deleteFile,
+  getFiles
 };
