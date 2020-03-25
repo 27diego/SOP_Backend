@@ -136,10 +136,10 @@ server.delete("/file", (req, res) => {
   Files.deleteFile(req, res);
 });
 
-server.get("/file/single", (req, res) => {
+server.get("/file/:name", (req, res) => {
   Files.getFile(req, res);
 });
-server.get("/file/all", (req, res) => {
+server.get("/files", (req, res) => {
   Files.getFiles(req, res);
 });
 

@@ -31,17 +31,22 @@ const deleteFile = (req, res) => {
 
   mongoSOPS.findOneAndDelete({ title }).then(file => {
     fs.unlinkSync(file.location);
-    res.json("deleted!");
+    res.json(title);
   });
 };
 
 const getFile = (req, res) => {
-  const { title } = req.body;
+  const { name } = req.params;
 
-  mongoSOPS.findOne({ title }).then(file => {
-    console.log(file);
-    res.json(file);
-  });
+  mongoSOPS
+    .findOne({ title: name })
+    .then(item => {
+      const file = item.location;
+      const data = fs.readFileSync(file);
+      res.contentType("application/pdf");
+      res.send(data);
+    })
+    .catch(err => console.log(err));
 };
 
 const rename = (path, title, sopDetails) => {
