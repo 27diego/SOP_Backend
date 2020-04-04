@@ -4,6 +4,29 @@ const word2pdf = require("word2pdf");
 const mongoSOPS = require("../../model/SopLibrary");
 const multer = require("multer");
 
+const getFile = (req, res) => {
+  const { name } = req.params;
+
+  mongoSOPS
+    .findOne({ title: name })
+    .then((item) => {
+      const file = item.location;
+      const data = fs.readFileSync(file);
+      res.contentType("application/pdf");
+      res.send(data);
+    })
+    .catch((err) => console.log(err));
+};
+
+const deleteFile = (req, res) => {
+  const { title } = req.body;
+
+  mongoSOPS.findOneAndDelete({ title }).then((file) => {
+    fs.unlinkSync(file.location);
+    res.json(title);
+  });
+};
+
 const addFile = (req, res) => {
   const { title, category, department } = req.body;
   const file = req.file;
@@ -20,33 +43,12 @@ const addFile = (req, res) => {
 
   const location = file.path;
 
+  console.log("file path: ", location);
+
   sopDetails = { title, category, department, location };
 
   //rename file
   rename(file.path, title, sopDetails);
-};
-
-const deleteFile = (req, res) => {
-  const { title } = req.body;
-
-  mongoSOPS.findOneAndDelete({ title }).then(file => {
-    fs.unlinkSync(file.location);
-    res.json(title);
-  });
-};
-
-const getFile = (req, res) => {
-  const { name } = req.params;
-
-  mongoSOPS
-    .findOne({ title: name })
-    .then(item => {
-      const file = item.location;
-      const data = fs.readFileSync(file);
-      res.contentType("application/pdf");
-      res.send(data);
-    })
-    .catch(err => console.log(err));
 };
 
 const rename = (path, title, sopDetails) => {
@@ -71,7 +73,7 @@ const transformFile = async (path, sopDetails) => {
 
   let error = false;
 
-  fs.writeFile(finalName, data, err => {
+  fs.writeFile(finalName, data, (err) => {
     let success = false;
     if (err) {
       console.log(err);
@@ -81,10 +83,10 @@ const transformFile = async (path, sopDetails) => {
       const sop = new mongoSOPS(sopDetails);
       sop
         .save()
-        .then(data => {
+        .then((data) => {
           success = true;
         })
-        .catch(err => console.log(err));
+        .catch((err) => console.log(err));
     }
   });
 
@@ -96,15 +98,15 @@ const transformFile = async (path, sopDetails) => {
 const getFiles = (req, res) => {
   mongoSOPS
     .find()
-    .then(files => {
+    .then((files) => {
       res.json(files);
     })
-    .catch(err => console.log(err));
+    .catch((err) => console.log(err));
 };
 
 module.exports = {
   addFile,
   getFile,
   deleteFile,
-  getFiles
+  getFiles,
 };
