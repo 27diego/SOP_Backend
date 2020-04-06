@@ -1,8 +1,5 @@
 const fs = require("fs");
-const word2pdf = require("word2pdf");
-
 const mongoSOPS = require("../../model/SopLibrary");
-const multer = require("multer");
 
 const getFile = (req, res) => {
   const { name } = req.params;
@@ -43,8 +40,6 @@ const addFile = (req, res) => {
 
   const location = file.path;
 
-  console.log("file path: ", location);
-
   sopDetails = { title, category, department, location };
 
   //rename file
@@ -61,37 +56,56 @@ const rename = (path, title, sopDetails) => {
   const newName = prefix + title + postFix;
 
   fs.renameSync(path, newName);
+  console.log("type: ", postFix);
 
-  transformFile(newName, sopDetails);
+  if (postFix.toLowerCase() === ".pdf") {
+    sopDetails["location"] = newName;
+    const sop = new mongoSOPS(sopDetails);
+    sop
+      .save()
+      .then((data) => {
+        success = true;
+      })
+      .catch((err) => console.log(err));
+  } else if (
+    postFix.toLowerCase() === ".doc" ||
+    postFix.toLowerCase() === ".docx"
+  ) {
+    transformFile(newName, sopDetails);
+  }
 };
 
 const transformFile = async (path, sopDetails) => {
-  const data = await word2pdf(path);
+  //conversion
 
   const indexOfDot = path.lastIndexOf(".");
   const finalName = path.substring(0, indexOfDot + 1) + "pdf";
-
   let error = false;
 
-  fs.writeFile(finalName, data, (err) => {
-    let success = false;
-    if (err) {
-      console.log(err);
-      error = true;
-    } else {
-      sopDetails["location"] = finalName;
-      const sop = new mongoSOPS(sopDetails);
-      sop
-        .save()
-        .then((data) => {
-          success = true;
-        })
-        .catch((err) => console.log(err));
-    }
-  });
+  // fs.writeFile(finalName, data, (err) => {
+  //   let success = false;
+  //   if (err) {
+  //     console.log(err);
+  //     error = true;
+  //   } else {
+  // sopDetails["location"] = finalName;
+  // const sop = new mongoSOPS(sopDetails);
+  // sop
+  //   .save()
+  //   .then((data) => {
+  //     success = true;
+  //   })
+  //   .catch((err) => console.log(err));
+  //   }
+  // });
 
   if (error === false) {
     fs.unlinkSync(path);
+    sopDetails["location"] = finalName;
+    const sop = new mongoSOPS(sopDetails);
+    sop.save().then((data) => {
+      success = true;
+    });
   }
 };
 
