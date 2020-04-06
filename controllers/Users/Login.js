@@ -12,7 +12,7 @@ const createLogin = (username, password) => {
 
   const login = new mongoLogin(loginDetails);
 
-  login.save().catch(err => {
+  login.save().catch((err) => {
     console.log(err);
     return false;
   });
@@ -20,25 +20,31 @@ const createLogin = (username, password) => {
   return true;
 };
 
-const deleteLogin = username => {
+const deleteLogin = (username) => {
   mongoLogin
     .findOneAndDelete({ username })
-    .then(login => {
+    .then((login) => {
       console.log("deleted login");
     })
-    .catch(err => console.log(err));
+    .catch((err) => console.log(err));
 };
 
 const updateLoginPassword = (username, password) => {
+  const hashP = bcrypt.hashSync(password, 10);
   mongoLogin
-    .findOneAndUpdate({ username }, { password }, { new: true })
-    .then(user => {
-      res.json("User's password updated").catch(err => console.log(err));
-    });
+    .findOneAndUpdate(
+      { username },
+      { password: hashP },
+      { new: true, useFindAndModify: false }
+    )
+    .then((user) => {
+      console.log("Updated password");
+    })
+    .catch((err) => console.log(err));
 };
 
 module.exports = {
   createLogin,
   deleteLogin,
-  updateLoginPassword
+  updateLoginPassword,
 };

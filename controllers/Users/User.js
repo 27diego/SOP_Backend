@@ -8,7 +8,7 @@ const createUser = (req, res) => {
     username,
     password,
     admin,
-    department
+    department,
   } = req.body;
 
   console.log("The Body: ", req.body);
@@ -29,9 +29,9 @@ const createUser = (req, res) => {
     .findOne({
       last_name: last_name,
       first_name: first_name,
-      username: username
+      username: username,
     })
-    .then(user => {
+    .then((user) => {
       if (user) {
         res.json("User Exists");
       } else {
@@ -41,27 +41,27 @@ const createUser = (req, res) => {
         if (success) {
           user
             .save()
-            .then(user => {
+            .then((user) => {
               res.json(user);
             })
-            .catch(err => console.log(err));
+            .catch((err) => console.log(err));
         } else {
           res.json("error, user not created");
         }
       }
     })
-    .catch(err => console.log(err));
+    .catch((err) => console.log(err));
 };
 
 const deleteUser = (req, res) => {
   const { first_name, last_name, username } = req.body;
   mongoUsers
     .findOneAndDelete({ first_name, last_name, username })
-    .then(user => {
+    .then((user) => {
       res.json(user.username);
       Login.deleteLogin(username);
     })
-    .catch(err => console.log(err));
+    .catch((err) => console.log(err));
 };
 
 const updateUserAdmin = (req, res) => {
@@ -69,33 +69,61 @@ const updateUserAdmin = (req, res) => {
 
   mongoUsers
     .findOneAndUpdate({ username }, { admin: admin }, { new: true })
-    .then(user => res.json(user))
-    .catch(err => {
+    .then((user) => res.json(user))
+    .catch((err) => {
       console.log(err);
     });
+};
+
+const updateUser = (req, res) => {
+  const {
+    first_name,
+    last_name,
+    username,
+    password,
+    admin,
+    department,
+  } = req.body;
+  mongoUsers
+    .findOneAndUpdate(
+      { username },
+      {
+        first_name: first_name,
+        last_name: last_name,
+        admin: admin,
+        department: department,
+      },
+      { new: true }
+    )
+    .then((user) => res.json(user))
+    .catch((err) => console.log(err));
+
+  if (password !== "") {
+    Login.updateLoginPassword(username, password);
+  }
 };
 
 const getUser = (req, res) => {
   mongoUsers
     .findOne({ last_name: req.body.last_name })
-    .then(user => {
+    .then((user) => {
       res.json(user);
     })
-    .catch(err => console.log(err));
+    .catch((err) => console.log(err));
 };
 
 const getUsers = (req, res) => {
   mongoUsers
     .find()
     .sort({ last_name: 1 })
-    .then(users => res.json(users))
-    .catch(err => console.log(err));
+    .then((users) => res.json(users))
+    .catch((err) => console.log(err));
 };
 
 module.exports = {
   createUser,
   deleteUser,
-  updateUserAdmin,
+  updateUser,
   getUser,
-  getUsers
+  getUsers,
 };

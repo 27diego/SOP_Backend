@@ -27,7 +27,7 @@ const fileStorage = multer.diskStorage({
   },
   filename: (req, file, cb) => {
     cb(null, file.originalname);
-  }
+  },
 });
 
 server.use(multer({ storage: fileStorage }).single("file"));
@@ -35,10 +35,10 @@ server.use(multer({ storage: fileStorage }).single("file"));
 //connect to mongodb
 mongoose.connect(process.env.DATABASE_URL, {
   useNewUrlParser: true,
-  useUnifiedTopology: true
+  useUnifiedTopology: true,
 });
 const db = mongoose.connection;
-db.on("error", error => {
+db.on("error", (error) => {
   console.log(error);
 });
 db.once("open", () => {
@@ -82,12 +82,12 @@ server.delete("/user", (req, res) => {
 
 //update user
 server.put("/user", (req, res) => {
-  switch (req.body.type) {
-    case "Admin":
-      User.updateUserAdmin(req, res);
-    default:
-      return;
-  }
+  // switch (req.body.type) {
+  //   case "Admin":
+  User.updateUser(req, res);
+  // default:
+  //   return;
+  // }
 });
 
 //update user credentials
