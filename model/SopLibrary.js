@@ -3,27 +3,25 @@ const mongoose = require("mongoose");
 const SopLibrarySchema = new mongoose.Schema({
   title: {
     type: String,
-    required: true
+    required: true,
   },
   category: {
     type: String,
-    enum: ["Chemical", "Cleaning"],
-    required: true
+    required: true,
   },
   department: {
     type: String,
-    enum: ["QA", "Packing", "Maintenance", "Safety", "Harvesting", "Growing"],
-    required: true
+    required: true,
   },
   location: {
     type: String,
-    required: true
+    required: true,
   },
   modified: {
     type: Date,
     required: false,
-    default: Date.now()
-  }
+    default: Date.now(),
+  },
 });
 
 const SOPLibraryModel = mongoose.model("SOPLibraryModel", SopLibrarySchema);
