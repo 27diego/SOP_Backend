@@ -47,16 +47,21 @@ const addFile = (req, res) => {
 };
 
 const rename = (path, title, sopDetails) => {
-  const indexOfSlash = path.lastIndexOf("/");
-  const indexOfDot = path.lastIndexOf(".");
+  let newName = path.replace(/ /g, "_");
+  let postFix = path.substring(path.lastIndexOf("."));
+  if (title === "") {
+    const indexOfSlash = path.lastIndexOf("/");
+    const indexOfDot = path.lastIndexOf(".");
 
-  const prefix = path.substring(0, indexOfSlash + 1);
-  const postFix = path.substring(indexOfDot);
+    const prefix = path.substring(0, indexOfSlash + 1);
+    const postFix = path.substring(indexOfDot);
 
-  const newName = prefix + title + postFix;
+    const newName = prefix + title + postFix;
+
+    newName = newName.replace(/ /g, "_");
+  }
 
   fs.renameSync(path, newName);
-  console.log("type: ", postFix);
 
   if (postFix.toLowerCase() === ".pdf") {
     sopDetails["location"] = newName;
