@@ -11,8 +11,6 @@ const createUser = (req, res) => {
     department,
   } = req.body;
 
-  console.log("The Body: ", req.body);
-
   let userDetails = {};
 
   //check fields are filled up
@@ -62,17 +60,6 @@ const deleteUser = (req, res) => {
       Login.deleteLogin(username);
     })
     .catch((err) => console.log(err));
-};
-
-const updateUserAdmin = (req, res) => {
-  const { username, admin } = req.body;
-
-  mongoUsers
-    .findOneAndUpdate({ username }, { admin: admin }, { new: true })
-    .then((user) => res.json(user))
-    .catch((err) => {
-      console.log(err);
-    });
 };
 
 const updateUser = (req, res) => {
