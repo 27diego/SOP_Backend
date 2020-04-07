@@ -7,6 +7,7 @@ const mongoose = require("mongoose");
 const multer = require("multer");
 const path = require("path");
 const cors = require("cors");
+const fs = require("fs");
 
 //express and middleware
 const server = express();
@@ -23,6 +24,9 @@ server.use((req, res, next) => {
 //Multer
 const fileStorage = multer.diskStorage({
   destination: (req, file, cb) => {
+    if (!fs.existsSync("SOPS")) {
+      fs.mkdirSync("SOPS", 0744);
+    }
     cb(null, "SOPS");
   },
   filename: (req, file, cb) => {
