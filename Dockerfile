@@ -1,4 +1,4 @@
-FROM node:latest
+FROM node:12.14.0
 
 WORKDIR /usr/src/SOP_backend
 
@@ -8,4 +8,4 @@ RUN npm install
 
 EXPOSE 3000
 
-CMD ["bin/bash"]
+CMD ["npm", "start"]
